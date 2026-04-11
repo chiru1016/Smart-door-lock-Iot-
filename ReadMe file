@@ -1,0 +1,169 @@
+Here’s a Smart Door Lock 🔐 project that includes ALL requirements:
+
+Digital Read
+
+Digital Write
+
+Analog Read
+
+Analog Write
+
+Serial Input
+
+Serial Output
+
+
+
+---
+
+🧠 Features
+
+Button → door open request 🔘 (Digital Read)
+
+Lock LED → locked/unlocked 💡 (Digital Write)
+
+Potentiometer → buzzer tone control 🎛️ (Analog Read)
+
+Buzzer PWM → tone change 🔊 (Analog Write)
+
+Serial input → password entry ⌨️ (Serial Input)
+
+Serial output → status messages 📟 (Serial Output)
+
+
+
+---
+
+🔌 Connections
+
+Lock LED → Pin 8
+
+Unlock LED → Pin 9
+
+Button → Pin 7 → GND
+
+Buzzer → Pin 5 (PWM)
+
+Potentiometer middle → A0
+
+Pot sides → 5V & GND
+
+
+
+---
+
+💻 Smart Door Lock Code
+
+#define lockLED 8
+#define unlockLED 9
+#define button 7
+#define buzzer 5
+#define pot A0
+
+String password = "1234";
+String input = "";
+
+int potValue;
+int toneValue;
+
+void setup() {
+  pinMode(lockLED, OUTPUT);
+  pinMode(unlockLED, OUTPUT);
+  pinMode(button, INPUT_PULLUP);
+  pinMode(buzzer, OUTPUT);
+
+  Serial.begin(9600);
+
+  digitalWrite(lockLED, HIGH);
+  digitalWrite(unlockLED, LOW);
+
+  Serial.println("Smart Door Lock Ready");
+}
+
+void loop() {
+
+  // -------- Analog Read --------
+  potValue = analogRead(pot);
+  toneValue = map(potValue, 0, 1023, 0, 255);
+
+  // -------- Analog Write --------
+  analogWrite(buzzer, toneValue);
+
+  // -------- Digital Read --------
+  if(digitalRead(button) == LOW){
+    Serial.println("Button Pressed - Door Bell");
+    analogWrite(buzzer, 200);
+    delay(500);
+    analogWrite(buzzer, 0);
+  }
+
+  // -------- Serial Input --------
+  if(Serial.available()){
+    char c = Serial.read();
+
+    if(c == '\n'){
+      if(input == password){
+        Serial.println("Door Unlocked");
+        digitalWrite(lockLED, LOW);
+        digitalWrite(unlockLED, HIGH);
+        delay(5000);
+        digitalWrite(lockLED, HIGH);
+        digitalWrite(unlockLED, LOW);
+        Serial.println("Door Locked");
+      } else {
+        Serial.println("Wrong Password");
+      }
+      input = "";
+    } else {
+      input += c;
+    }
+  }
+
+  // -------- Serial Output --------
+  Serial.print("Buzzer Level: ");
+  Serial.println(toneValue);
+
+  delay(500);
+}
+
+
+---
+
+🔐 How It Works
+
+Type 1234 in Serial Monitor → Door unlocks ✅
+
+Wrong password → stays locked ❌
+
+Button pressed → bell sound 🔔
+
+Potentiometer → changes buzzer tone 🎛️
+
+LEDs show lock status 🔴🟢
+
+
+
+---
+
+Requirements Covered
+
+✔ digitalRead → button
+
+✔ digitalWrite → LEDs
+
+✔ analogRead → potentiometer
+
+✔ analogWrite → buzzer PWM
+
+✔ serial input → password
+
+✔ serial output → messages
+
+
+Want me to:
+
+add **servo motor door lock** 🚪
+
+draw **circuit diagram** 🖼️
+
+simplify for lab record 📄
